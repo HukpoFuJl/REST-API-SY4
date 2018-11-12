@@ -2,16 +2,13 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use FOS\OAuthServerBundle\Model\ClientManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
-use App\Entity\Article;
 
 /**
  * Brand controller.
@@ -20,36 +17,37 @@ use App\Entity\Article;
  */
 class UserController extends Controller
 {
+    /** @var ClientManagerInterface */
+    private $clientManager;
+
+    public function __construct(ClientManagerInterface $clientManager)
+    {
+        $this->clientManager = $clientManager;
+    }
+
     /**
      * Create Client.
      * @FOSRest\Get("/createClient")
      *
-     * @return array
+     * @return View
      */
-    public function AuthenticationAction()
+    public function AuthenticationAction(Request $input)
     {
-        
-        
-                // Get the client manager
-                /** @var ClientManagerInterface $clientManager */
-                $clientManager = $this->get('fos_oauth_server.client_manager.default');
-        
                 // Create a new client
-                $client = $clientManager->createClient();
-        
-                $client->setRedirectUris($input->getOption('redirect-uri'));
-                $client->setAllowedGrantTypes($input->getOption('grant-type'));
-        
+                $client = $this->clientManager->createClient();
+
+                $client->setRedirectUris([$input->get('redirect-uri')]);
+                $client->setAllowedGrantTypes([$input->get('grant-type')]);
+
                 // Save the client
-                $clientManager->updateClient($client);
-        
+                $this->clientManager->updateClient($client);
+
                 // Give the credentials back to the user
                 $headers = ['Client ID', 'Client Secret'];
                 $rows = [
                     [$client->getPublicId(), $client->getSecret()],
                 ];
-        
-        dump($rows);exit;
+
         return View::create($rows, Response::HTTP_OK , []);
     }
 
