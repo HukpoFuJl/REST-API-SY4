@@ -29,7 +29,7 @@ class UserController extends Controller
      * Create Client.
      * @FOSRest\Get("/createClient")
      *
-     * @return View
+     * @return Response
      */
     public function AuthenticationAction(Request $input)
     {
@@ -37,7 +37,7 @@ class UserController extends Controller
                 $client = $this->clientManager->createClient();
 
                 $client->setRedirectUris([$input->get('redirect-uri')]);
-                $client->setAllowedGrantTypes([$input->get('grant-type')]);
+                $client->setAllowedGrantTypes(['token', 'authorization_code', 'password']);
 
                 // Save the client
                 $this->clientManager->updateClient($client);
@@ -48,7 +48,11 @@ class UserController extends Controller
                     [$client->getPublicId(), $client->getSecret()],
                 ];
 
-        return View::create($rows, Response::HTTP_OK , []);
+        return $this->redirect($this->generateUrl('fos_oauth_server_authorize', array(
+            'client_id'     => $client->getPublicId(),
+            'redirect_uri'  => '/api/articles',
+            'response_type' => 'code'
+        )));
     }
 
 }

@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,13 +20,13 @@ use App\Entity\Article;
  *
  * @Route("/api")
  */
-class ArticleController extends Controller
+class ArticleController extends FOSRestController
 {
     /**
      * Lists all Articles.
      * @FOSRest\Get("/articles")
      *
-     * @return View
+     * @return JsonResponse
      */
     public function getArticleAction()
     {
@@ -32,15 +34,15 @@ class ArticleController extends Controller
         
         // query for a single Product by its primary key (usually "id")
         $article = $repository->findall();
-        
-        return View::create($article, Response::HTTP_OK , []);
+
+        return new JsonResponse($article, Response::HTTP_OK);
     }
 
     /**
      * Create Article.
      * @FOSRest\Post("/article")
      *
-     * @return View
+     * @return JsonResponse
      */
 
     public function postArticleAction(Request $request)
@@ -52,7 +54,7 @@ class ArticleController extends Controller
         $em->persist($article);
         $em->flush();
 
-        return View::create($article, Response::HTTP_CREATED , []);
+        return new JsonResponse($article, Response::HTTP_CREATED);
         
     }
 }
