@@ -1,11 +1,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: 'en'
     model.client.class: 'App\Entity\Client'
     fos_oauth_server.model.client.class:  'App\Entity\Client'
     fos_oauth_server.model.access_token.class:  'App\Entity\AccessToken'
     fos_oauth_server.model.auth_code.class:  'App\Entity\AuthCode'
+    locale: 'en'
     fos_oauth_server.model.refresh_token.class:  'App\Entity\RefreshToken'
 services:
     # default configuration for services in *this* file
@@ -27,6 +27,11 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+
+    App\Controller\UserController:
+        class: App\Controller\UserController
+        arguments: ['@fos_oauth_server.client_manager.default']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

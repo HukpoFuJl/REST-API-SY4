@@ -24,7 +24,7 @@ class ArticleController extends Controller
      * Lists all Articles.
      * @FOSRest\Get("/articles")
      *
-     * @return array
+     * @return View
      */
     public function getArticleAction()
     {
@@ -40,7 +40,7 @@ class ArticleController extends Controller
      * Create Article.
      * @FOSRest\Post("/article")
      *
-     * @return array
+     * @return View
      */
 
     public function postArticleAction(Request $request)
